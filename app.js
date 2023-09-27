@@ -8,6 +8,7 @@ const databasePath = path.join(__dirname, "todoApplication.db");
 
 const app = express();
 
+app.use(cors());
 app.use(express.json());
 
 let database = null;
