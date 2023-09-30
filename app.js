@@ -8,7 +8,6 @@ const databasePath = path.join(__dirname, "todoApplication.db");
 
 const app = express();
 
-app.use(cors());
 app.use(express.json());
 
 let database = null;
@@ -31,19 +30,20 @@ const initializeDbAndServer = async () => {
 
 initializeDbAndServer();
 
-app.get("/users/:userDetails/", async (request, response) => {
-  const { userDetails } = request.params;
-  const { username, password } = userDetails;
+app.get("/users/:username/:password", async (request, response) => {
+  const { username, password } = request.params;
   const getUserQuery = `
     SELECT
       password
     FROM
       users
     WHERE
-      username = ${username};`;
+     username =  ${username};`;
   const pw = await database.get(getTodoQuery);
-  if (pw === password) {
+  if (pw && pw.password === password) {
     response.send("true");
+  } else {
+    response.send("False");
   }
 });
 
