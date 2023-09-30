@@ -1,0 +1,10 @@
+POST http://localhost:3000/users
+Content-Type: "application/json"
+
+{
+    "username":"satwik",
+    "password":"satwik2000"
+}
+###
+
+GET http://localhost:3000/users/satwik/satwik2000
