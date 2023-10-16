@@ -39,10 +39,16 @@ app.get("/users/:username/:password", async (request, response) => {
       users
     WHERE
      username =  ${username};`;
-  const pw = await database.get(getTodoQuery);
-  if (pw && pw.password === password) {
+  const pw = await database.get(getUserQuery);
+  console.log(pw.password);
+  var_psd = password.toString();
+  var usr_psd = var_psd.replace(/['"]/g, "");
+  console.log(usr_psd);
+  if (pw.password === usr_psd) {
+    console.log("true");
     response.send("true");
   } else {
+    console.log("false");
     response.send("False");
   }
 });
