@@ -8,6 +8,7 @@ const jwt = require("jsonwebtoken");
 const databasePath = path.join(__dirname, "todoApplication.db");
 
 const app = express();
+app.use(cors());
 
 app.use(express.json());
 
@@ -38,6 +39,7 @@ app.post("/login/", async (request, response) => {
   const token = jwt.sign({ username: username }, secretKey, {
     expiresIn: "1h",
   });
+  const error_msg = "Username and password did not match";
   const getUserQuery = `
     SELECT
       password
@@ -53,7 +55,7 @@ app.post("/login/", async (request, response) => {
     response.json({ token });
   } else {
     console.log("false");
-    response.send("Username and password did not match");
+    response.send({ error_msg });
   }
 });
 
