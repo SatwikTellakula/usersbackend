@@ -3,6 +3,7 @@ const { open } = require("sqlite");
 const sqlite3 = require("sqlite3");
 const path = require("path");
 const cors = require("cors");
+const jwt = require("jsonwebtoken");
 
 const databasePath = path.join(__dirname, "todoApplication.db");
 
@@ -30,38 +31,42 @@ const initializeDbAndServer = async () => {
 
 initializeDbAndServer();
 
-app.get("/users/:username/:password", async (request, response) => {
-  const { username, password } = request.params;
+app.post("/login/", async (request, response) => {
+  const { username, password } = request.body;
+  console.log(password); // Ensure this line is within the route handler
+  const secretKey = "yourSecretKey";
+  const token = jwt.sign({ username: username }, secretKey, {
+    expiresIn: "1h",
+  });
   const getUserQuery = `
     SELECT
       password
     FROM
       users
     WHERE
-     username =  ${username};`;
-  const pw = await database.get(getUserQuery);
-  console.log(pw.password);
-  var_psd = password.toString();
-  var usr_psd = var_psd.replace(/['"]/g, "");
-  console.log(usr_psd);
-  if (pw.password === usr_psd) {
+      username = ?;
+  `;
+  const pw = await database.get(getUserQuery, [username]);
+  console.log(pw);
+  if (pw && pw.password === password) {
     console.log("true");
-    response.send("true");
+    response.json({ token });
   } else {
     console.log("false");
-    response.send("False");
+    response.send("Username and password did not match");
   }
 });
 
-app.post("/users/", async (request, response) => {
+app.post("/register/", async (request, response) => {
   const { username, password } = request.body;
-  const postTodoQuery = `
-  INSERT INTO
+  const InsertUserQuery = `
+    INSERT INTO
     users (username, password)
-  VALUES
-    (${username}, '${password}');`;
-  await database.run(postTodoQuery);
-  response.send("user account created successfully");
+    VALUES
+    ('${username}', '${password}');
+  `;
+  await database.run(InsertUserQuery); // Use the correct query variable
+  response.send("User account created successfully");
 });
 
 module.exports = app;
